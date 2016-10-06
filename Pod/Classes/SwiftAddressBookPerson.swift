@@ -365,8 +365,8 @@ open class SwiftAddressBookPerson : SwiftAddressBookRecord {
 	}
 
 	fileprivate func extractMultivalueProperty<T>(_ propertyName : ABPropertyID) -> Array<MultivalueEntry<T>>? {
+		guard let multivalue: ABMultiValue = extractProperty(propertyName) else { return nil }
 		var array = Array<MultivalueEntry<T>>()
-		let multivalue : ABMultiValue? = extractProperty(propertyName)
 		for i : Int in 0..<(ABMultiValueGetCount(multivalue)) {
 			let value : T? = ABMultiValueCopyValueAtIndex(multivalue, i).takeRetainedValue() as? T
 			if let v : T = value {
