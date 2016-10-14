@@ -12,4 +12,4 @@ before_install:
     - brew uninstall xctool && brew install --HEAD xctool
 
 script:
-    - "xctool -workspace Example/SwiftAddressBookExample.xcworkspace -sdk iphonesimulator -scheme SwiftAddressBookTests -destination platform='iOS Simulator','OS=9.0',name='iPhone 5' build test"
+    - "xctool -workspace Example/SwiftAddressBookExample.xcworkspace -sdk iphonesimulator -scheme SwiftAddressBookTests -destination platform='iOS Simulator','OS=9.0',name='iPhone 5' test"
