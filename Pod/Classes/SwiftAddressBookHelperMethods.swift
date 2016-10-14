@@ -12,6 +12,8 @@ import AddressBook
 import Foundation
 import AddressBook
 
+@available(iOS, deprecated: 9.0)
+
 extension NSString {
 
 	convenience init?(optionalString : String?) {
@@ -23,8 +25,8 @@ extension NSString {
 	}
 }
 
-func errorIfNoSuccess(_ call : (UnsafeMutablePointer<Unmanaged<CFError>?>) -> Bool) -> CFError? {
-	var err : Unmanaged<CFError>? = nil
+func errorIfNoSuccess(_ call : (UnsafeMutablePointer<Unmanaged<CFError>?>!) -> Bool) -> CFError? {
+	var err : Unmanaged<CFError>?
 	let success : Bool = call(&err)
 	if success {
 		return nil

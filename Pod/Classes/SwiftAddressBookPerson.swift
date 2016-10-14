@@ -9,6 +9,9 @@
 import UIKit
 import AddressBook
 
+
+@available(iOS, deprecated: 9.0)
+
 //MARK: Wrapper for ABAddressBookRecord of type ABPerson
 
 open class SwiftAddressBookPerson : SwiftAddressBookRecord {
@@ -100,8 +103,7 @@ open class SwiftAddressBookPerson : SwiftAddressBookRecord {
 	}
 
 	open var compositeName : String? {
-		let compositeName = ABRecordCopyCompositeName(internalRecord)?.takeRetainedValue() as NSString?
-		return compositeName as? String
+		return ABRecordCopyCompositeName(internalRecord)?.takeRetainedValue() as String?
 	}
 
 	open var firstName : String? {
@@ -257,7 +259,7 @@ open class SwiftAddressBookPerson : SwiftAddressBookRecord {
 		}
 	}
 
-	open var addresses : Array<MultivalueEntry<Dictionary<SwiftAddressBookAddressProperty,AnyObject>>>? {
+	open var addresses : Array<MultivalueEntry<Dictionary<SwiftAddressBookAddressProperty,Any>>>? {
 		get {
 			let keyConverter = {(s : NSString) -> SwiftAddressBookAddressProperty in SwiftAddressBookAddressProperty(property: s as String)}
 			let valueConverter = { (s : AnyObject) -> AnyObject in return s }
@@ -413,19 +415,6 @@ open class SwiftAddressBookPerson : SwiftAddressBookRecord {
 		}
 	}
 
-	fileprivate func convertDictionary<T, U, V : AnyObject, W : AnyObject>(_ d : Dictionary<T,U>?, keyConverter : (T) -> V, valueConverter : (U) -> W ) -> NSDictionary? where V : Hashable {
-		if let d2 = d {
-			var dict = Dictionary<V,W>()
-			for key in d2.keys {
-				dict[keyConverter(key)] = valueConverter(d2[key]!)
-			}
-			return dict as NSDictionary?
-		}
-		else {
-			return nil
-		}
-	}
-
 	fileprivate func convertMultivalueEntries<T,U: AnyObject>(_ multivalue : [MultivalueEntry<T>]?, converter : (T) -> U) -> [MultivalueEntry<U>]? {
 
 		var result: [MultivalueEntry<U>]?
@@ -489,10 +478,15 @@ open class SwiftAddressBookPerson : SwiftAddressBookRecord {
 		ABRecordSetValue(internalRecord, key, abMultivalue, nil)
 	}
 
-	fileprivate func setMultivalueDictionaryProperty<T, U, V: AnyObject, W: AnyObject>(_ key : ABPropertyID, _ multivalue : Array<MultivalueEntry<Dictionary<T,U>>>?,keyConverter : (T) -> V , valueConverter : (U)-> W) where V: Hashable {
+	fileprivate func setMultivalueDictionaryProperty<KeyType, ValueType, TargetKeyType: Hashable, TargetValueType: Any>
+		(_ key : ABPropertyID, _ multivalue : Array<MultivalueEntry<Dictionary<KeyType,ValueType>>>?,keyConverter : @escaping (KeyType) -> TargetKeyType, valueConverter : @escaping (ValueType) -> TargetValueType) {
 
 		let array = convertMultivalueEntries(multivalue, converter: { d -> NSDictionary in
-			return self.convertDictionary(d, keyConverter: keyConverter, valueConverter: valueConverter)!
+			var dict = Dictionary<TargetKeyType,TargetValueType>()
+			for key in d.keys {
+				dict[keyConverter(key)] = valueConverter(d[key]!)
+			}
+			return (dict as NSDictionary?)!
 		})
 		
 		setMultivalueProperty(key, array)

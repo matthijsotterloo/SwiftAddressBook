@@ -9,6 +9,8 @@
 import Foundation
 import AddressBook
 
+@available(iOS, deprecated: 9.0)
+
 //MARK: Wrapper for ABAddressBookRecord of type ABGroup
 
 open class SwiftAddressBookGroup : SwiftAddressBookRecord {

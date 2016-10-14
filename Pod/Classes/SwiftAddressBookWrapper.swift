@@ -16,6 +16,8 @@
 import UIKit
 import AddressBook
 
+@available(iOS, deprecated: 9.0)
+
 //MARK: global address book variable (automatically lazy)
 
 public let swiftAddressBook : SwiftAddressBook! = SwiftAddressBook()
@@ -27,7 +29,7 @@ open class SwiftAddressBook {
 
 	open var internalAddressBook : ABAddressBook!
 	
-	fileprivate lazy var addressBookObserver = SwiftAddressBookObserver()
+	//fileprivate lazy var addressBookObserver = SwiftAddressBookObserver()
 
 	public init?() {
 		var err : Unmanaged<CFError>? = nil
@@ -64,7 +66,7 @@ open class SwiftAddressBook {
     }
     
     open func addRecord(_ record : SwiftAddressBookRecord) -> CFError? {
-        return errorIfNoSuccess { ABAddressBookAddRecord(self.internalAddressBook, record.internalRecord, $0) }
+		return errorIfNoSuccess { ABAddressBookAddRecord(self.internalAddressBook, record.internalRecord, $0) }
     }
     
     open func removeRecord(_ record : SwiftAddressBookRecord) -> CFError? {
@@ -84,16 +86,16 @@ open class SwiftAddressBook {
 		return convertRecordsToPersons(ABAddressBookCopyArrayOfAllPeople(internalAddressBook).takeRetainedValue())
     }
 
-	open func registerExternalChangeCallback(_ callback: @escaping () -> Void) {
-		addressBookObserver.startObserveChanges { (addressBook) -> Void in
-			callback()
-		}
-	}
-
-	open func unregisterExternalChangeCallback(_ callback: () -> Void) {
-		addressBookObserver.stopObserveChanges()
-		callback()
-	}
+//	open func registerExternalChangeCallback(_ callback: @escaping () -> Void) {
+//		addressBookObserver.startObserveChanges { (addressBook) -> Void in
+//			callback()
+//		}
+//	}
+//
+//	open func unregisterExternalChangeCallback(_ callback: () -> Void) {
+//		addressBookObserver.stopObserveChanges()
+//		callback()
+//	}
 
 
 

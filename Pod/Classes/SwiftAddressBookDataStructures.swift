@@ -9,6 +9,8 @@
 import Foundation
 import AddressBook
 
+@available(iOS, deprecated: 9.0)
+
 //MARK: multivalue entry for multivalue properties
 
 public struct MultivalueEntry<T> {

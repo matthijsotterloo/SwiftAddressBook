@@ -39,19 +39,19 @@ class SwiftAddressBookPersonTests: XCTestCase {
 		/* test with unrotated image */
 		let p = SwiftAddressBookPerson.create()
 
-		let image = UIImage(named: "testImage")!
-		p.setImage(image)
-		XCTAssertTrue(UIImagePNGRepresentation(image)!.isEqual(UIImagePNGRepresentation(p.image!)!),
+		let image = UIImage(named: "testImage", in: Bundle.init(for: type(of: self)), compatibleWith: nil)!
+		_ = p.setImage(image)
+		XCTAssertTrue(UIImagePNGRepresentation(image)!.elementsEqual(UIImagePNGRepresentation(p.image!)!),
 			"Images must stay the same after setting and retrieving again")
 
 		/* test with differently oriented image */
-		let imageRotated = UIImage(CGImage: image.CGImage!, scale: 1.0, orientation: UIImageOrientation.DownMirrored)
-		p.setImage(imageRotated)
-		XCTAssertTrue(UIImagePNGRepresentation(imageRotated)!.isEqual(UIImagePNGRepresentation(p.image!)!),
+		let imageRotated = UIImage(cgImage: image.cgImage!, scale: 1.0, orientation: UIImageOrientation.downMirrored)
+		_ = p.setImage(imageRotated)
+		XCTAssertTrue(UIImagePNGRepresentation(imageRotated)!.elementsEqual(UIImagePNGRepresentation(p.image!)!),
 			"Images must stay the same after setting and retrieving again")
 
 		/* test with deleted image */
-		p.removeImage()
+		_ = p.removeImage()
 		XCTAssertTrue(p.image == nil)
 	}
 
@@ -66,7 +66,7 @@ class SwiftAddressBookPersonTests: XCTestCase {
 		p.firstName = "firstname"
 		XCTAssertEqual("firstname", p.compositeName, "composite name should consist first name when no lastname is set")
 		p.lastName = "lastname"
-		XCTAssertTrue((p.compositeName ?? "").containsString("lastname"), "composite name should contain first and last name")
+		XCTAssertTrue((p.compositeName ?? "").contains("lastname"), "composite name should contain first and last name")
 	}
 
 	func testGetPerson() {
@@ -123,8 +123,8 @@ class SwiftAddressBookPersonTests: XCTestCase {
 				XCTAssert(address[SwiftAddressBookAddressProperty.zip] as? NSString == "94010", "Incorrect zip")
 			}
 
-			let date = self.getDate(1978, 01, 20, 12)
-			XCTAssert(person.birthday! == date, "Incorrect birthday (was \(person.birthday))")
+
+			XCTAssert(person.birthday == Date(timeIntervalSince1970: 254145600), "Incorrect birthday (was \(person.birthday))")
 		}
 	}
 
@@ -150,15 +150,15 @@ class SwiftAddressBookPersonTests: XCTestCase {
 			let phone = MultivalueEntry(value: "(555) 555-1234", label: "office", id: 0)
 			person.phoneNumbers = [phone]
 			let addressData = [
-				SwiftAddressBookAddressProperty.street: "123 Main Bridge" as AnyObject, //TODO: Can we make it so they don't have to cast here, please?
-				SwiftAddressBookAddressProperty.city: "Upper Sphere" as AnyObject,
-				SwiftAddressBookAddressProperty.state: "Death Star" as AnyObject,
-				SwiftAddressBookAddressProperty.zip: "12345" as AnyObject
+				SwiftAddressBookAddressProperty.street: "123 Main Bridge" as Any, //TODO: Can we make it so they don't have to cast here, please?
+				SwiftAddressBookAddressProperty.city: "Upper Sphere" as Any,
+				SwiftAddressBookAddressProperty.state: "Death Star" as Any,
+				SwiftAddressBookAddressProperty.zip: "12345" as Any
 			]
 			let address = MultivalueEntry(value: addressData, label: "work", id: 0)
 			person.addresses = [address]
-			swiftAddressBook?.addRecord(person)
-			swiftAddressBook?.save()
+			_ = swiftAddressBook?.addRecord(person)
+			_ = swiftAddressBook?.save()
 		}
 
 		optionalPerson = swiftAddressBook?.allPeople?.filter({ p in p.firstName == "Darth" + timeStamp }).first
@@ -169,8 +169,8 @@ class SwiftAddressBookPersonTests: XCTestCase {
 			XCTAssert(person.lastName == "Vader" + timeStamp, "Failed to save last name")
 			XCTAssert(person.nickname == "Anakin" + timeStamp, "Failed to save nickname")
 
-			swiftAddressBook?.removeRecord(person)
-			swiftAddressBook?.save()
+			_ = swiftAddressBook?.removeRecord(person)
+			_ = swiftAddressBook?.save()
 		}
 	}
 
@@ -186,8 +186,8 @@ class SwiftAddressBookPersonTests: XCTestCase {
 		let timeStamp = self.getDateTimestamp()
 		if let person = optionalPerson {
 			person.firstName = "Test" + timeStamp;
-			swiftAddressBook?.addRecord(person)
-			swiftAddressBook?.save()
+			_ = swiftAddressBook?.addRecord(person)
+			_ = swiftAddressBook?.save()
 		}
 
 		optionalPerson = swiftAddressBook?.allPeople?.filter({ p in p.firstName == "Test" + timeStamp }).first
@@ -205,22 +205,22 @@ class SwiftAddressBookPersonTests: XCTestCase {
 				let phone = MultivalueEntry(value: "(555) 555-1234", label: "office", id: 0)
 				person.phoneNumbers = [phone]
 				let addressData = [
-					SwiftAddressBookAddressProperty.street: "123 Main Bridge" as AnyObject, //TODO: Can we make it so they don't have to cast here, please?
-					SwiftAddressBookAddressProperty.city: "Upper Sphere" as AnyObject,
-					SwiftAddressBookAddressProperty.state: "Death Star" as AnyObject,
-					SwiftAddressBookAddressProperty.zip: "12345" as AnyObject
+					SwiftAddressBookAddressProperty.street: "123 Main Bridge" as Any, //TODO: Can we make it so they don't have to cast here, please?
+					SwiftAddressBookAddressProperty.city: "Upper Sphere" as Any,
+					SwiftAddressBookAddressProperty.state: "Death Star" as Any,
+					SwiftAddressBookAddressProperty.zip: "12345" as Any
 				]
 				let address = MultivalueEntry(value: addressData, label: "work", id: 0)
 				person.addresses = [address]
 
-				swiftAddressBook?.save()
+				_ = swiftAddressBook?.save()
 			}
 
 			optionalPerson = swiftAddressBook?.allPeople?.filter({ p in p.firstName == "Darth" + timeStamp }).first
 			XCTAssertNotNil(optionalPerson, "Newly added person was not saved")
 
 			let people = swiftAddressBook?.peopleWithName("Darth")
-			XCTAssert(people?.count > 0 && people![0].firstName == "Darth" + timeStamp, "Failed to find person by searching for name")
+			XCTAssert((people?.count)! > 0 && people![0].firstName! == "Darth" + timeStamp, "Failed to find person by searching for name")
 
 			if let person = optionalPerson {
 
@@ -233,11 +233,11 @@ class SwiftAddressBookPersonTests: XCTestCase {
 				XCTAssert(person.addresses?.count == 1, "Incorrect addresses count")
 
 
-				swiftAddressBook?.removeRecord(person)
-				swiftAddressBook?.save()
+				_ = swiftAddressBook?.removeRecord(person)
+				_ = swiftAddressBook?.save()
 			} else if let person = swiftAddressBook?.allPeople?.filter({ p in p.firstName == "Test" + timeStamp }).first { //Clean up failed test
-				swiftAddressBook?.removeRecord(person)
-				swiftAddressBook?.save()
+				_ = swiftAddressBook?.removeRecord(person)
+				_ = swiftAddressBook?.save()
 			}
 		}
 	}
@@ -252,7 +252,7 @@ class SwiftAddressBookPersonTests: XCTestCase {
 		}
 
 		let person = SwiftAddressBookPerson.create()
-		swiftAddressBook!.addRecord(person);
+		_ = swiftAddressBook!.addRecord(person);
 
 		//multivalue entry with nil label
 		person.addresses = [MultivalueEntry(value: [SwiftAddressBookAddressProperty.street : "testStreet"],
@@ -268,7 +268,7 @@ class SwiftAddressBookPersonTests: XCTestCase {
 		//nil single value property
 		person.firstName = nil
 
-		swiftAddressBook!.save()
+		_ = swiftAddressBook!.save()
 
 		XCTAssertNil(person.addresses?.first?.label, "label of first address should be nil")
 		XCTAssertNotNil(person.addresses?.last?.label, "label of second address should be not nil")
@@ -305,7 +305,7 @@ class SwiftAddressBookPersonTests: XCTestCase {
 		addresses[1] = MultivalueEntry(value: addresses[1].value, label: nil, id: addresses[1].id)
 
 		person.addresses = addresses
-		swiftAddressBook!.save()
+		_ = swiftAddressBook!.save()
 
 		XCTAssert(person.addresses?.count == 2, "person should have exactly 2 addresses")
 
@@ -320,8 +320,8 @@ class SwiftAddressBookPersonTests: XCTestCase {
 			XCTAssert(false, "should be able to unwrap label of first address")
 		}
 
-		swiftAddressBook!.removeRecord(person)
-		swiftAddressBook!.save()
+		_ = swiftAddressBook!.removeRecord(person)
+		_ = swiftAddressBook!.save()
 	}
 
 	func testPeopleInHashBasedCollections() {
@@ -343,18 +343,18 @@ class SwiftAddressBookPersonTests: XCTestCase {
 	//MARK: - Helper funtions
 
 	func getDateTimestamp() -> String {
-		let formatter = NSDateFormatter()
+		let formatter = DateFormatter()
 		formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZ"
-		return formatter.stringFromDate(NSDate())
+		return formatter.string(from: Date())
 	}
 
-	func getDate(year: Int,_ month: Int,_ day: Int,_ hour: Int) -> NSDate {
-		let components = NSDateComponents()
+	func getDate(_ year: Int,_ month: Int,_ day: Int,_ hour: Int) -> Date {
+		var components = DateComponents()
 		components.year = year
 		components.month = month
 		components.day = day
 		components.hour = hour
-		components.timeZone = NSTimeZone(name: "UTC")
-		return NSCalendar.currentCalendar().dateFromComponents(components)!
+		(components as NSDateComponents).timeZone = TimeZone(identifier: "UTC")
+		return Calendar.current.date(from: components)!
 	}
 }
