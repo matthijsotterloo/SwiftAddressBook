@@ -9,11 +9,13 @@
 import Foundation
 import AddressBook
 
+@available(iOS, deprecated: 9.0)
+
 //MARK: Wrapper for ABAddressBookRecord
 
-public class SwiftAddressBookRecord {
+open class SwiftAddressBookRecord {
 
-	public var internalRecord : ABRecord!
+	open var internalRecord : ABRecord!
 
 	public convenience init?(record : ABRecord?) {
 		if let rec = record {
@@ -28,11 +30,11 @@ public class SwiftAddressBookRecord {
 		self.internalRecord = record
 	}
 
-	public var recordID: Int {
+	open var recordID: Int {
 		return Int(ABRecordGetRecordID(self.internalRecord))
 	}
 
-	public var recordType: SwiftAddressBookRecordType {
+	open var recordType: SwiftAddressBookRecordType {
 		return SwiftAddressBookRecordType(abRecordType: ABRecordGetRecordType(self.internalRecord))
 	}
 }

@@ -12,6 +12,8 @@ import AddressBook
 import Foundation
 import AddressBook
 
+@available(iOS, deprecated: 9.0)
+
 extension NSString {
 
 	convenience init?(optionalString : String?) {
@@ -23,8 +25,8 @@ extension NSString {
 	}
 }
 
-func errorIfNoSuccess(call : (UnsafeMutablePointer<Unmanaged<CFError>?>) -> Bool) -> CFError? {
-	var err : Unmanaged<CFError>? = nil
+func errorIfNoSuccess(_ call : (UnsafeMutablePointer<Unmanaged<CFError>?>!) -> Bool) -> CFError? {
+	var err : Unmanaged<CFError>?
 	let success : Bool = call(&err)
 	if success {
 		return nil
@@ -37,21 +39,21 @@ func errorIfNoSuccess(call : (UnsafeMutablePointer<Unmanaged<CFError>?>) -> Bool
 
 //MARK: methods to convert arrays of ABRecords
 
-func convertRecordsToSources(records : CFArray?) -> [SwiftAddressBookSource]? {
+func convertRecordsToSources(_ records : CFArray?) -> [SwiftAddressBookSource]? {
 	let swiftRecords = (records as NSArray? as? [ABRecord])?.map {(record : ABRecord) -> SwiftAddressBookSource in
 		return SwiftAddressBookSource(record: record)
 	}
 	return swiftRecords
 }
 
-func convertRecordsToGroups(records : CFArray?) -> [SwiftAddressBookGroup]? {
+func convertRecordsToGroups(_ records : CFArray?) -> [SwiftAddressBookGroup]? {
 	let swiftRecords = (records as NSArray? as? [ABRecord])?.map {(record : ABRecord) -> SwiftAddressBookGroup in
 		return SwiftAddressBookGroup(record: record)
 	}
 	return swiftRecords
 }
 
-func convertRecordsToPersons(records : CFArray?) -> [SwiftAddressBookPerson]? {
+func convertRecordsToPersons(_ records : CFArray?) -> [SwiftAddressBookPerson]? {
 	let swiftRecords = (records as NSArray? as? [ABRecord])?.map {(record : ABRecord) -> SwiftAddressBookPerson in
 		return SwiftAddressBookPerson(record: record)
 	}

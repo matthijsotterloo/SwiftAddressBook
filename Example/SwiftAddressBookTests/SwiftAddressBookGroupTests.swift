@@ -30,19 +30,4 @@ class SwiftAddressBookGroupTests: XCTestCase {
 
 	//TODO: test creating, modifying, and deleting group
 
-	//MARK: - Helper funtions
-
-    func getDateTimestamp() -> String {
-        let formatter = NSDateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZ"
-        return formatter.stringFromDate(NSDate())
-    }
-    
-    func getDate(year: Int,_ month: Int,_ day: Int) -> NSDate {
-        let components = NSDateComponents()
-        components.year = year
-        components.month = month
-        components.day = day
-        return NSCalendar.currentCalendar().dateFromComponents(components)!
-    }
 }

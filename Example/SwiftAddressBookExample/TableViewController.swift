@@ -17,7 +17,7 @@ class TableViewController: UITableViewController {
 	var people : [SwiftAddressBookPerson]?
 	var names : [String?]? = []
 	var numbers : [Array<String?>?]? = []
-	var birthdates : [NSDate?]? = []
+	var birthdates : [Date?]? = []
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -34,9 +34,9 @@ class TableViewController: UITableViewController {
 				//TODO: to test adding a new group uncomment the following
 				//self.addNewGroup()
 
-				dispatch_async(dispatch_get_main_queue(), {
+				DispatchQueue.main.async {
 					self.tableView.reloadData()
-				})
+				}
 
 			}
 		}
@@ -51,9 +51,9 @@ class TableViewController: UITableViewController {
 		let phone = MultivalueEntry(value: "newTestuserNumber", label: "mobile", id: 1)
 		person.phoneNumbers = [phone]
 
-		var addresses : Array<MultivalueEntry<Dictionary<SwiftAddressBookAddressProperty,AnyObject>>>? = nil
-		let address1 = [SwiftAddressBookAddressProperty.street:"testStreet" as AnyObject, SwiftAddressBookAddressProperty.city:"testCity"];
-		let address2 = [SwiftAddressBookAddressProperty.street:"testStreet2" as AnyObject, SwiftAddressBookAddressProperty.city:"testCity2"];
+		var addresses : Array<MultivalueEntry<Dictionary<SwiftAddressBookAddressProperty,Any>>>? = nil
+		let address1 = [SwiftAddressBookAddressProperty.street:"testStreet" as AnyObject, SwiftAddressBookAddressProperty.city:"testCity"] as [SwiftAddressBookAddressProperty : Any];
+		let address2 = [SwiftAddressBookAddressProperty.street:"testStreet2" as AnyObject, SwiftAddressBookAddressProperty.city:"testCity2"] as [SwiftAddressBookAddressProperty : Any];
 		addresses = [
 			MultivalueEntry(value: address1, label: kABWorkLabel as String?, id: 0),
 			MultivalueEntry(value: address2, label: kABHomeLabel as String?, id: 0)
@@ -61,8 +61,8 @@ class TableViewController: UITableViewController {
 
 		person.addresses = addresses;
 
-		swiftAddressBook?.addRecord(person)
-		swiftAddressBook?.save()
+		_ = swiftAddressBook?.addRecord(person)
+		_ = swiftAddressBook?.save()
 	}
 
 	func addNewGroup() {
@@ -70,17 +70,17 @@ class TableViewController: UITableViewController {
 
 		group.name = "Testgroup"
 
-		swiftAddressBook?.addRecord(group)
+		_ = swiftAddressBook?.addRecord(group)
 
 		//it is necessary to save before adding people
-		swiftAddressBook?.save()
+		_ = swiftAddressBook?.save()
 
 		//add half of the people
 		for i in 0..<self.people!.count/2 {
-			group.addMember(self.people![i])
+			_ = group.addMember(self.people![i])
 		}
 
-		swiftAddressBook?.save()
+		_ = swiftAddressBook?.save()
 	}
 
 	func saveObjectsForTableView() {
@@ -101,7 +101,7 @@ class TableViewController: UITableViewController {
 		self.names = self.people?.map { (p) -> (String?) in
 			return p.compositeName
 		}
-		self.birthdates = self.people?.map { (p) -> (NSDate?) in
+		self.birthdates = self.people?.map { (p) -> (Date?) in
 			return p.birthday
 		}
 	}
@@ -113,11 +113,11 @@ class TableViewController: UITableViewController {
 
 	// MARK: - Table view data source
 
-	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+	override func numberOfSections(in tableView: UITableView) -> Int {
 		return groups == nil ? 1 : groups!.count+1
 	}
 
-	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		if groups == nil || section == groups?.count {
 			return people == nil ? 0 : people!.count
 		}
@@ -132,15 +132,15 @@ class TableViewController: UITableViewController {
 	}
 
 
-	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-		let cell = tableView.dequeueReusableCellWithIdentifier("addressCell", forIndexPath: indexPath) as! AddressViewCell
+		let cell = tableView.dequeueReusableCell(withIdentifier: "addressCell", for: indexPath) as! AddressViewCell
 
 		if groups == nil || indexPath.section == groups?.count {
 			// Configure the cell...
 			cell.nameLabel.text = people![indexPath.row].compositeName
-			cell.birthdateLabel.text = birthdates![indexPath.row]?.description
-			cell.phoneNumberLabel.text = numbers![indexPath.row]?.first!
+			cell.birthdateLabel.text = birthdates![(indexPath as NSIndexPath).row]?.description
+			cell.phoneNumberLabel.text = numbers![(indexPath as NSIndexPath).row]?.first!
 		}
 		else {
 			let group = groups![indexPath.section]
@@ -152,7 +152,7 @@ class TableViewController: UITableViewController {
 		return cell
 	}
 
-	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+	override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 		if groups == nil || section == groups?.count {
 			return "All people"
 		}
