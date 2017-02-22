@@ -16,8 +16,6 @@
 import UIKit
 import AddressBook
 
-@available(iOS, deprecated: 9.0)
-
 //MARK: global address book variable (automatically lazy)
 
 public let swiftAddressBook : SwiftAddressBook! = SwiftAddressBook()
